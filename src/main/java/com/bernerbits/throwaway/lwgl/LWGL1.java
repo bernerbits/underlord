@@ -15,6 +15,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLUConstants;
 import org.lwjgl.util.glu.GLU;
 
+import com.bernerbits.utils.lighting.Light;
+import com.bernerbits.utils.lighting.LightBank;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class LWGL1 {
@@ -22,6 +25,9 @@ public class LWGL1 {
 	private static float t = 0;
 	//private static int x = 400, y = 300;
 	private static int wallTexId, floorTexId;
+	
+	private static LightBank lightBank = LightBank.getInstance();
+	private static Light light;
 	
 	public static void main(String[] args) throws LWJGLException, IOException {
 		Display.setLocation(100, 100);
@@ -48,16 +54,12 @@ public class LWGL1 {
 		glShadeModel(GL_SMOOTH);
 		glEnable(GL_COLOR_MATERIAL);
 		glEnable(GL_NORMALIZE);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT1);
-				
-		FloatBuffer position = BufferUtils.createFloatBuffer(4);
-		position.put(new float[]{-.2f,1,.5f,0}).flip(); 
-		glLight(GL_LIGHT1, GL_POSITION, position);
 		
-		FloatBuffer diffuse = BufferUtils.createFloatBuffer(4);
-		diffuse.put(new float[]{.3f,.3f,.3f,1}).flip();
-		glLight(GL_LIGHT1, GL_DIFFUSE, diffuse);
+		lightBank.enable();
+		light = lightBank.acquire();
+		
+		light.setDirection(-.2,1,.5);
+		light.setDiffuseColor(.3,.3,.3);
 		
 		wallTexId = Texture.loadTexture("/wall.jpg", true);
 		floorTexId = Texture.loadTexture("/floor.jpg", true);
@@ -87,10 +89,7 @@ public class LWGL1 {
 		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		glBindTexture(GL_TEXTURE_2D, wallTexId);
 		
-		float intensity = (float)((Math.sin(t * Math.PI * 2) + 1) / 2);
-		FloatBuffer ambient = BufferUtils.createFloatBuffer(4);
-		ambient.put(new float[]{.1f + 0.05f*t,.1f,.05f,1}).flip();
-		glLight(GL_LIGHT1, GL_AMBIENT, ambient);
+		light.setAmbientColor(.15 + .025*t, .1, .05);
 		
 		glBegin(GL_QUADS);	
 		
@@ -138,7 +137,7 @@ public class LWGL1 {
 	}
 
 	public static void pollInput() {
-		t += 1/60.0;
+		t += 1/30.0;
 		if(t >= 1) t = 0;
 		
 		//angle += 0.01;
