@@ -138,7 +138,7 @@ public class LWGL1 {
 
 	public static void pollInput() {
 		t += 1/30.0;
-		if(t >= 1) t = 0;
+		if(Math.abs(t - 1) < .0001 || t > 1) t = 0;
 		
 		//angle += 0.01;
 		/*
