@@ -19,8 +19,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class LWGL1 {
 
-	private static double angle = 0;
-	private static int x = 400, y = 300;
+	private static float t = 0;
+	//private static int x = 400, y = 300;
 	private static int wallTexId, floorTexId;
 	
 	public static void main(String[] args) throws LWJGLException, IOException {
@@ -50,13 +50,13 @@ public class LWGL1 {
 		glEnable(GL_NORMALIZE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT1);
-		
-		FloatBuffer ambient = BufferUtils.createFloatBuffer(4);
-		ambient.put(new float[]{.1f,.1f,.1f,1}).flip();
-		glLight(GL_LIGHT1, GL_AMBIENT, ambient);
+				
+		FloatBuffer position = BufferUtils.createFloatBuffer(4);
+		position.put(new float[]{-.2f,1,.5f,0}).flip(); 
+		glLight(GL_LIGHT1, GL_POSITION, position);
 		
 		FloatBuffer diffuse = BufferUtils.createFloatBuffer(4);
-		diffuse.put(new float[]{.6f,.6f,.6f,1}).flip();
+		diffuse.put(new float[]{.3f,.3f,.3f,1}).flip();
 		glLight(GL_LIGHT1, GL_DIFFUSE, diffuse);
 		
 		wallTexId = Texture.loadTexture("/wall.jpg", true);
@@ -79,41 +79,45 @@ public class LWGL1 {
 		
 		glClearColor(0,0,0,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glRotated(angle,0,1,0);
 		
-		glTranslatef(200,0,200);
-		glRotated(angle,0,1,0);
-		glTranslatef(-200,0,-200);
+		//glTranslatef(200,0,200);
+		//glRotated(angle,0,1,0);
+		//glTranslatef(-200,0,-200);
 		
 		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		glBindTexture(GL_TEXTURE_2D, wallTexId);
 		
-		FloatBuffer position = BufferUtils.createFloatBuffer(4);
-		position.put(new float[]{200,120,200,1}).flip(); 
-		glLight(GL_LIGHT1, GL_POSITION, position);
+		float intensity = (float)((Math.sin(t * Math.PI * 2) + 1) / 2);
+		FloatBuffer ambient = BufferUtils.createFloatBuffer(4);
+		ambient.put(new float[]{.1f + 0.05f*t,.1f,.05f,1}).flip();
+		glLight(GL_LIGHT1, GL_AMBIENT, ambient);
 		
 		glBegin(GL_QUADS);	
 		
-		glNormal3i(-1, 0, 0); glTexCoord2d(0, 0); glVertex3f(0,0,0); 
-		glNormal3i(-1, 0, 0); glTexCoord2d(0, .5); glVertex3f(0,80,0);
-		glNormal3i(-1, 0, 0); glTexCoord2d(2.5, .5); glVertex3f(0,80,400);
-		glNormal3i(-1, 0, 0); glTexCoord2d(2.5, 0); glVertex3f(0,0,400);
-		
-		glNormal3i(0, 0, 1); glTexCoord2d(0, 0); glVertex3f(0,0,400);
-		glNormal3i(0, 0, 1); glTexCoord2d(0, .5); glVertex3f(0,80,400);
-		glNormal3i(0, 0, 1); glTexCoord2d(2.5, .5); glVertex3f(400,80,400);
-		glNormal3i(0, 0, 1); glTexCoord2d(2.5, 0); glVertex3f(400,0,400);
-
-		glNormal3i(-1, 0, 0); glTexCoord2d(0, 0); glVertex3f(400,0,400);
-		glNormal3i(-1, 0, 0); glTexCoord2d(0, 1); glVertex3f(400,80,400);
-		glNormal3i(-1, 0, 0); glTexCoord2d(2.5, 1); glVertex3f(400,80,0);
-		glNormal3i(-1, 0, 0); glTexCoord2d(2.5, 0); glVertex3f(400,0,0);
-		
-		glNormal3i(0, 0, 1); glTexCoord2d(0, 0); glVertex3f(400,0,0);
-		glNormal3i(0, 0, 1); glTexCoord2d(0, .5); glVertex3f(400,80,0);
-		glNormal3i(0, 0, 1); glTexCoord2d(2.5, .5); glVertex3f(0,80,0);
-		glNormal3i(0, 0, 1); glTexCoord2d(2.5, 0); glVertex3f(0,0,0);
-		
+		double texX = 0;
+		for(int l = 0; l < 400; l+=80) {
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX, 0); glVertex3f(0,0,l); 
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX, .5); glVertex3f(0,80,l);
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX+.5, .5); glVertex3f(0,80,l+80);
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX+.5, 0); glVertex3f(0,0,l+80);
+			
+			glNormal3i(0, 0, 1); glTexCoord2d(texX, 0); glVertex3f(l,0,400);
+			glNormal3i(0, 0, 1); glTexCoord2d(texX, .5); glVertex3f(l,80,400);
+			glNormal3i(0, 0, 1); glTexCoord2d(texX+.5, .5); glVertex3f(l+80,80,400);
+			glNormal3i(0, 0, 1); glTexCoord2d(texX+.5, 0); glVertex3f(l+80,0,400);
+	
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX, 0); glVertex3f(400,0,l+80);
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX, .5); glVertex3f(400,80,l+80);
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX+.5, .5); glVertex3f(400,80,l);
+			glNormal3i(-1, 0, 0); glTexCoord2d(texX+.5, 0); glVertex3f(400,0,l);
+			
+			glNormal3i(0, 0, 1); glTexCoord2d(texX, 0); glVertex3f(l+80,0,0);
+			glNormal3i(0, 0, 1); glTexCoord2d(texX, .5); glVertex3f(l+80,80,0);
+			glNormal3i(0, 0, 1); glTexCoord2d(texX+.5, .5); glVertex3f(l,80,0);
+			glNormal3i(0, 0, 1); glTexCoord2d(texX+.5, 0); glVertex3f(l,0,0);
+			
+			texX += .5;
+		}
 		glEnd();
 		
 		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
@@ -134,8 +138,11 @@ public class LWGL1 {
 	}
 
 	public static void pollInput() {
-		angle += 0.5;
+		t += 1/60.0;
+		if(t >= 1) t = 0;
 		
+		//angle += 0.01;
+		/*
 		if(Mouse.isButtonDown(0)) {
 			x = Mouse.getX();
 			y = Mouse.getY();
@@ -154,5 +161,6 @@ public class LWGL1 {
 				System.out.println("D key " + state);
 			} 
 		}
+		*/
 	}
 }
