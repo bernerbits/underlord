@@ -1,39 +1,38 @@
 package com.bernerbits.throwaway.lwgl;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
+import static org.lwjgl.opengl.GL11.*;
 
-import org.lwjgl.BufferUtils;
+import java.io.IOException;
+import java.util.Arrays;
+
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLUConstants;
-import org.lwjgl.util.glu.GLU;
+import org.lwjgl.opengl.PixelFormat;
 
+import com.bernerbits.util.geom.Point2D;
+import com.bernerbits.util.geom.Polygon2D;
+import com.bernerbits.util.geom.Polygons;
 import com.bernerbits.utils.lighting.Light;
 import com.bernerbits.utils.lighting.LightBank;
-
-import static org.lwjgl.opengl.GL11.*;
+import com.bernerbits.utils.material.DiffuseImageTextureMaterial;
+import com.bernerbits.utils.material.Material;
 
 public class LWGL1 {
 
 	private static float t = 0;
+	private static float angle = 0;
 	//private static int x = 400, y = 300;
-	private static int wallTexId, floorTexId;
 	
 	private static LightBank lightBank = LightBank.getInstance();
 	private static Light light;
+	private static DungeonRenderer dungeonRenderer;
 	
 	public static void main(String[] args) throws LWJGLException, IOException {
 		Display.setLocation(100, 100);
 		Display.setTitle("Hello, World!");
 		Display.setDisplayMode(new DisplayMode(800,600));
-		Display.create();
+		Display.create(new PixelFormat(8, 24, 8));
 		
 		glViewport(0, 0, 800, 600);
 		
@@ -47,22 +46,18 @@ public class LWGL1 {
 		glMatrixMode(GL_MODELVIEW); 
 		glLoadIdentity();
 		
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_TEXTURE_2D);
-		glShadeModel(GL_SMOOTH);
-		glEnable(GL_COLOR_MATERIAL);
-		glEnable(GL_NORMALIZE);
-		
 		lightBank.enable();
 		light = lightBank.acquire();
 		
 		light.setDirection(-.2,1,.5);
 		light.setDiffuseColor(.3,.3,.3);
 		
-		wallTexId = Texture.loadTexture("/wall.jpg", true);
-		floorTexId = Texture.loadTexture("/floor.jpg", true);
+		Material wallMat = new DiffuseImageTextureMaterial("/wall.jpg", true).scale(2, 2);
+		Material floorMat = new DiffuseImageTextureMaterial("/floor.jpg", true).scale(1, 1);
+		
+		dungeonRenderer = new DungeonRenderer(wallMat, floorMat, Arrays.asList(Polygons.newRegularPoly(200,200,200,20), 
+				Polygons.newReverseRegularPoly(100,100,50,15))); // Reverse polygons = cutouts
+		dungeonRenderer.init();
 		
 		while(!Display.isCloseRequested()) {
 			pollInput();
@@ -82,14 +77,16 @@ public class LWGL1 {
 		glClearColor(0,0,0,1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		//glTranslatef(200,0,200);
-		//glRotated(angle,0,1,0);
-		//glTranslatef(-200,0,-200);
+		glTranslatef(200,0,200);
+		glRotated(angle,0,1,0);
+		glTranslatef(-200,0,-200);
 		
+		light.setAmbientColor(.15 + .025*t, .1, .05);
+		
+		/*
 		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		glBindTexture(GL_TEXTURE_2D, wallTexId);
 		
-		light.setAmbientColor(.15 + .025*t, .1, .05);
 		
 		glBegin(GL_QUADS);	
 		
@@ -134,11 +131,16 @@ public class LWGL1 {
 		}
 
 		glEnd();
+		*/
+		
+		dungeonRenderer.render();
 	}
 
 	public static void pollInput() {
 		t += 1/30.0;
 		if(Math.abs(t - 1) < .0001 || t > 1) t = 0;
+		
+		angle += .05f;
 		
 		//angle += 0.01;
 		/*
