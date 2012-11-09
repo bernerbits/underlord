@@ -55,7 +55,7 @@ public class LWGL1 {
 		Material wallMat = new DiffuseImageTextureMaterial("/wall.jpg", true).scale(2, 2);
 		Material floorMat = new DiffuseImageTextureMaterial("/floor.jpg", true).scale(1, 1);
 		
-		dungeonRenderer = new DungeonRenderer(wallMat, floorMat, Arrays.asList(Polygons.newRegularPoly(200,200,200,20), 
+		dungeonRenderer = new DungeonRenderer(wallMat, floorMat, Arrays.asList(Polygons.newRegularPoly(200,200,200,60), 
 				Polygons.newReverseRegularPoly(100,100,50,15))); // Reverse polygons = cutouts
 		dungeonRenderer.init();
 		

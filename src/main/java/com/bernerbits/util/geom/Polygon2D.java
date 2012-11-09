@@ -1,6 +1,7 @@
 package com.bernerbits.util.geom;
 
 import java.util.Iterator;
+import java.util.List;
 
 public final class Polygon2D {
 	
