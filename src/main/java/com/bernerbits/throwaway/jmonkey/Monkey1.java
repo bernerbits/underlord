@@ -2,9 +2,7 @@ package com.bernerbits.throwaway.jmonkey;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.poly2tri.Poly2Tri;
@@ -16,9 +14,12 @@ import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
 import com.bernerbits.util.geom.Polygon2D;
 import com.bernerbits.util.geom.Polygon2DNode;
 import com.bernerbits.util.geom.Polygons;
-import com.google.common.collect.Lists;
 import com.jme3.app.SimpleApplication;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -84,13 +85,14 @@ public class Monkey1 extends SimpleApplication {
 			wall.setBuffer(VertexBuffer.Type.Normal,3,BufferUtils.createFloatBuffer(normals.toArray(new Vector3f[0])));
 			wall.setBuffer(VertexBuffer.Type.Index,1,BufferUtils.createIntBuffer(ArrayUtils.toPrimitive(indices.toArray(new Integer[0]))));
 			
+			wall.scaleTextureCoordinates(new Vector2f(.2f,.2f));
 			wall.updateBound();
 			Geometry wallGeom = new Geometry("Wall" + wallIndex,wall);
 			
-		    Material wallMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+		    Material wallMaterial = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
 		    Texture wallTexture = assetManager.loadTexture("wall.jpg");
 		    wallTexture.setWrap(WrapMode.Repeat);
-		    wallMaterial.setTexture("ColorMap", wallTexture);
+		    wallMaterial.setTexture("DiffuseMap", wallTexture);
 		    wallGeom.setMaterial(wallMaterial);
 			
 			dungeon.attachChild(wallGeom);
@@ -128,21 +130,38 @@ public class Monkey1 extends SimpleApplication {
 			floor.setBuffer(VertexBuffer.Type.Normal,3,BufferUtils.createFloatBuffer(normals.toArray(new Vector3f[0])));
 			floor.setBuffer(VertexBuffer.Type.Index,1,BufferUtils.createIntBuffer(ArrayUtils.toPrimitive(indices.toArray(new Integer[0]))));
 			
+			floor.scaleTextureCoordinates(new Vector2f(.5f,.5f));
 			floor.updateBound();
 			Geometry floorGeom = new Geometry("Floor",floor);
 			
-		    Material floorMaterial = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+		    Material floorMaterial = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
 		    Texture floorTexture = assetManager.loadTexture("floor.jpg");
 		    floorTexture.setWrap(WrapMode.Repeat);
-		    floorMaterial.setTexture("ColorMap", floorTexture);
+		    floorMaterial.setTexture("DiffuseMap", floorTexture);
 		    floorGeom.setMaterial(floorMaterial);
 		    
 		    dungeon.attachChild(floorGeom);
 		}
 		
-		dungeon.setLocalTranslation(0, -.5f, 0);
-		
+		dungeon.setLocalScale(.1f);
+
+		AmbientLight ambient = new AmbientLight();
+		ambient.setColor(new ColorRGBA(1.8f,1.8f,1.8f,1));
+		rootNode.addLight(ambient);
+	    
+	    DirectionalLight sun = new DirectionalLight();
+	    sun.setDirection(new Vector3f(1,-1,1).normalizeLocal());
+	    sun.setColor(ColorRGBA.White);
+	    rootNode.addLight(sun);
+	    
 		rootNode.attachChild(dungeon);
+		
+		cam.setLocation(new Vector3f(1,1,-1));
+		cam.setAxes(new Vector3f(1,0,0), new Vector3f(0,1,0), new Vector3f(0,0,1));
+		// Camera rotation obtained from debug. I don't grok Quaternions yet, so I have no idea why they work!!
+		cam.setRotation(new Quaternion(0.27080652f, -0.3579396f, 0.08276218f, 0.8897716f));  
+		
+		cam.setParallelProjection(true);
 	}
 
 }
