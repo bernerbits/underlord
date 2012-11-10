@@ -8,6 +8,8 @@ import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
@@ -30,6 +32,8 @@ public class CameraController implements AnalogListener, ActionListener {
 		model.getParent().attachChild(container);
 		container.attachChild(model);
 	}
+	
+	private static final float SPEED = 10;
 	
 	public void bind(InputManager im) {
 		im.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
@@ -59,11 +63,17 @@ public class CameraController implements AnalogListener, ActionListener {
 				Vector3f forward = cam.getDirection().clone();
 				forward.y = 0;
 				forward = forward.normalizeLocal();
-				forward = container.getLocalRotation().inverse().multLocal(forward);
+				Vector3f location = cam.getLocation();
 				if(name.equals("Up")) {
-					model.setLocalTranslation(model.getLocalTranslation().add(forward.mult(-value)));
+					cam.setLocation(new Vector3f(
+							location.x+forward.x*value*SPEED ,
+							location.y,
+							location.z+forward.z*value*SPEED));
 				} else {
-					model.setLocalTranslation(model.getLocalTranslation().add(forward.mult(value)));
+					cam.setLocation(new Vector3f(
+							location.x-forward.x*value*SPEED,
+							location.y,
+							location.z-forward.z*value*SPEED));
 				} 
 			}
 		} else if(name.equals("Left") || name.equals("Right")) {
@@ -71,28 +81,52 @@ public class CameraController implements AnalogListener, ActionListener {
 				Vector3f left = cam.getLeft().clone();
 				left.y = 0;
 				left = left.normalizeLocal();
-				left = container.getLocalRotation().inverse().multLocal(left);
+				Vector3f location = cam.getLocation();
 				if(name.equals("Left")) {
-					model.setLocalTranslation(model.getLocalTranslation().add(left.mult(-value)));
+					cam.setLocation(new Vector3f(
+							location.x+left.x*value*SPEED,
+							location.y,
+							location.z+left.z*value*SPEED));
 				} else {
-					model.setLocalTranslation(model.getLocalTranslation().add(left.mult(value)));
+					cam.setLocation(new Vector3f(
+							location.x-left.x*value*SPEED,
+							location.y,
+							location.z-left.z*value*SPEED));
 				}
 			}
 		} else if(name.equals("ZoomIn") || name.equals("ZoomOut")) {
 			if(!rotating) {
-				if(name.equals("ZoomIn")) {
-					model.scale((float)Math.pow(2, value));
+				double scaleAmount;
+				if(name.equals("ZoomOut")) {
+					scaleAmount = Math.pow(2, value);
 				} else {
-					model.scale((float)Math.pow(2, -value));
+					scaleAmount = Math.pow(2, -value);
 				}
+				cam.setFrustumLeft((float)(cam.getFrustumLeft()*scaleAmount));
+				cam.setFrustumRight((float)(cam.getFrustumRight()*scaleAmount));
+				cam.setFrustumTop((float)(cam.getFrustumTop()*scaleAmount));
+				cam.setFrustumBottom((float)(cam.getFrustumBottom()*scaleAmount));
 			}
 		} else if(name.equals("RotLeft") || name.equals("RotRight")) {
 			if(rotating) {
-				if(name.equals("RotLeft")) {
-					container.rotate(0, -value, 0);
-				} else {
-					container.rotate(0, value, 0);
+				if(name.equals("RotRight")) {
+					value = -value;
 				}
+				Matrix3f mat = new Matrix3f();
+				mat.fromAngleNormalAxis(value, Vector3f.UNIT_Y);
+		        Vector3f up = cam.getUp();
+		        Vector3f left = cam.getLeft();
+		        Vector3f dir = cam.getDirection();
+
+		        mat.mult(up, up);
+		        mat.mult(left, left);
+		        mat.mult(dir, dir);
+
+		        Quaternion q = new Quaternion();
+		        q.fromAxes(left, up, dir);
+		        q.normalizeLocal();
+
+		        cam.setAxes(q);
 			}
 		}
 	}

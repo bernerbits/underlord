@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.bernerbits.ul.camera.CameraController;
 import com.bernerbits.ul.mesh.DungeonGenerator;
+import com.bernerbits.ul.mesh.UnderlordGenerator;
 import com.bernerbits.ul.texture.Texturizer;
 import com.bernerbits.util.geom.Polygon2D;
 import com.bernerbits.util.geom.Polygons;
@@ -35,8 +36,12 @@ public class Monkey1 extends SimpleApplication {
 		Polygon2D holePoly = Polygons.newReverseRegularPoly(-1,-1,1,5);
 		DungeonGenerator generator = new DungeonGenerator("Test Dungeon", Arrays.asList(dungeonPoly, holePoly), new Texturizer(assetManager));
 		Spatial dungeon = generator.createDungeon();
-		world.setLocalScale(.05f);
 		world.attachChild(dungeon);
+		
+		// Underlord
+		Spatial underlord = new UnderlordGenerator(assetManager).createUnderlord();
+		underlord.setLocalTranslation(0,0.5f,0);
+		world.attachChild(underlord);
 		
 		// Lights
 		AmbientLight ambient = new AmbientLight();
@@ -51,6 +56,7 @@ public class Monkey1 extends SimpleApplication {
 	    // Camera
 	    flyCam.setEnabled(false); // Disable fly-by controls
 		cam.setLocation(new Vector3f(1,1,-1));
+		cam.setFrustum(-1000f,1000f,-7.5f,7.5f,6.5f,-6.5f);
 		cam.setAxes(new Vector3f(1,0,0), new Vector3f(0,1,0), new Vector3f(0,0,1));
 		// Camera rotation obtained from debug. I don't grok Quaternions yet, so I have no idea why they work!!
 		cam.setRotation(new Quaternion(0.27080652f, -0.3579396f, 0.08276218f, 0.8897716f));  
