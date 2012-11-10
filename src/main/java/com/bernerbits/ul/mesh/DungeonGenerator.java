@@ -67,6 +67,7 @@ public class DungeonGenerator {
 		
 		Mesh floor = new Mesh();
 		floor.setMode(Mesh.Mode.Triangles);
+		//floor.setMode(Mesh.Mode.Lines);
 		
 		List<Vector3f> vertices = new ArrayList<Vector3f>();
 		List<Vector2f> texcoords = new ArrayList<Vector2f>();
@@ -79,9 +80,19 @@ public class DungeonGenerator {
 			normals.add(new Vector3f(0,1,0));
 		}
 		for(SharedVertexTriangle2D tri : triangles.getTriangles()) {
+			//SharedVertex2D last = null;
+			//SharedVertex2D first = null;
 			for(SharedVertex2D v : tri.getCWVertices()) {
-				indices.add(v.getIndex());
+				//if(last != null) {
+				//	indices.add(last.getIndex());
+					indices.add(v.getIndex());
+				//} else {
+				//	first = v;
+				//}
+				//last = v;
 			}
+			//indices.add(last.getIndex());
+			//indices.add(first.getIndex());
 		}
 		
 		floor.setBuffer(VertexBuffer.Type.Position,3,BufferUtils.createFloatBuffer(vertices.toArray(new Vector3f[0])));
@@ -104,6 +115,7 @@ public class DungeonGenerator {
 		List<Integer> indices = new ArrayList<Integer>();
 		
 		wall.setMode(Mesh.Mode.TriangleStrip);
+		//wall.setMode(Mesh.Mode.LineStrip);
 		int index = 0;
 		for(Polygon2DNode node : wallPoly.getNodes()) {
 			indices.add(index);
