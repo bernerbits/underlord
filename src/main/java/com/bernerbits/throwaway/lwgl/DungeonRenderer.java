@@ -49,7 +49,7 @@ public class DungeonRenderer {
 	}
 
 	private List<PolygonPoint> getPoints(Polygon2D walls) {
-		List<PolygonPoint> points = new ArrayList<>();
+		List<PolygonPoint> points = new ArrayList<PolygonPoint>();
 		for(Polygon2DNode node : walls.getNodes()) {
 			points.add(new PolygonPoint(node.getX(), node.getY()));
 		}

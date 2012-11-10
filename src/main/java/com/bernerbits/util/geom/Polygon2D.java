@@ -3,8 +3,12 @@ package com.bernerbits.util.geom;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
+
 public final class Polygon2D {
 	
+	private boolean clockwise;
 	private double maxX;
 	private double minX;
 	private double maxY;
@@ -46,6 +50,7 @@ public final class Polygon2D {
 		first.setPrev(current);
 		
 		calculateExtents();
+		calculateWinding();
 		calculateTextureAndNormals();
 	}
 	
@@ -158,6 +163,56 @@ public final class Polygon2D {
 				minY = node.getY();
 			}
 		}
+	}
+	
+	private void calculateWinding() {
+		// Adapted from algorithm here: http://www.gamedev.net/topic/447552-determining-winding-order-in-2d-polygon/
+		int insideCount = 0;
+		
+		for(Polygon2DNode node : getNodes()) {
+		
+			// Consider the two adjacent edges as edges of a triangle and get the midpoint of this triangle
+			Point2D midpoint = GeometryFunctions.triangleBarycenter(
+					node.prev().toPoint(),
+					node.toPoint(),
+					node.next().toPoint()
+			);
+			
+			// Get the normals to the two edge vectors: in the case of a clockwise
+			// polygon they will point towards the inside of the polygon.
+			Vector2d normal1 = new Vector2d(
+					- (node.getY() - node.prev().getY()),
+					node.getX() - node.prev().getX()
+			);
+			
+			Vector2d normal2 = new Vector2d(
+					- (node.next().getY() - node.getY()),
+					node.next().getX() - node.getX()
+			);
+			
+			// Now get a vector going from the shared point of the two edges to the midpoint of the triangle
+			Vector2d testVector = new Vector2d(
+				midpoint.getX() - node.getX(),
+				midpoint.getY() - node.getY()
+			);
+			
+			// Now test if this point is inside the 'triangle' mentioned previously by
+			// dotting the testVector with the two normals we got. A true point inside
+			// triangle test would check against the normals of all three triangle edges. 
+			// But for this test we only use two: if either of the dot products is zero
+			// then consider the point to be 'outside' the triangle.
+			if(testVector.dot(normal1) < 0 || testVector.dot(normal2) < 0) {
+				insideCount++;
+			} else {
+				insideCount--;
+			}
+			
+		}
+		clockwise = (insideCount >= 0);
+	}
+	
+	public boolean isClockwise() {
+		return clockwise;
 	}
 	
 }

@@ -63,4 +63,8 @@ public final class Polygon2DNode {
 		this.nPrev = prev;
 	}
 
+	public Point2D toPoint() {
+		return new Point2D(x,y);
+	}
+
 }
