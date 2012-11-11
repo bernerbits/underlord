@@ -1,10 +1,8 @@
 package com.bernerbits.util.geom;
 
 import java.util.Iterator;
-import java.util.List;
 
-import javax.vecmath.Vector2d;
-import javax.vecmath.Vector2f;
+import com.jme3.math.Vector2f;
 
 public final class Polygon2D {
 	
@@ -180,20 +178,20 @@ public final class Polygon2D {
 			
 			// Get the normals to the two edge vectors: in the case of a clockwise
 			// polygon they will point towards the inside of the polygon.
-			Vector2d normal1 = new Vector2d(
-					- (node.getY() - node.prev().getY()),
-					node.getX() - node.prev().getX()
+			Vector2f normal1 = new Vector2f(
+					- (float)((node.getY() - node.prev().getY())),
+					(float)(node.getX() - node.prev().getX())
 			);
 			
-			Vector2d normal2 = new Vector2d(
-					- (node.next().getY() - node.getY()),
-					node.next().getX() - node.getX()
+			Vector2f normal2 = new Vector2f(
+					- (float)((node.next().getY() - node.getY())),
+					(float)(node.next().getX() - node.getX())
 			);
 			
 			// Now get a vector going from the shared point of the two edges to the midpoint of the triangle
-			Vector2d testVector = new Vector2d(
-				midpoint.getX() - node.getX(),
-				midpoint.getY() - node.getY()
+			Vector2f testVector = new Vector2f(
+				(float)(midpoint.getX() - node.getX()),
+				(float)(midpoint.getY() - node.getY())
 			);
 			
 			// Now test if this point is inside the 'triangle' mentioned previously by
