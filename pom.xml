@@ -70,7 +70,7 @@
 			<artifactId>jme3-jbullet</artifactId>
 			<version>3.0.beta</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jmonkeyengine.jme3</groupId>
 			<artifactId>jme3-testdata</artifactId>
@@ -88,6 +88,13 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>13.0.1</version>
+		</dependency>
+
+		<!-- Shouldn't need this -->
+		<dependency>
+			<groupId>java3d</groupId>
+			<artifactId>vecmath</artifactId>
+			<version>1.3.1</version>
 		</dependency>
 
 	</dependencies>
