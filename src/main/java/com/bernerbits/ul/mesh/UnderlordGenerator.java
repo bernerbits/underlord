@@ -25,8 +25,9 @@ public class UnderlordGenerator {
 		flash_mat.setTexture("Texture",
 				assetManager.loadTexture("Effects/Explosion/flash.png"));
 
-		ParticleEmitter flash1 = new ParticleEmitter("underlord red", ParticleMesh.Type.Triangle, 7);
+		ParticleEmitter flash1 = new ParticleEmitter("underlord purple", ParticleMesh.Type.Triangle, 7);
 		flash1.setParticlesPerSec(7);
+		flash1.setRandomAngle(true);
 		flash1.setMaterial(flash_mat);
 		flash1.setImagesX(2); // columns
 		flash1.setImagesY(2); // rows
@@ -39,8 +40,9 @@ public class UnderlordGenerator {
 		flash1.setStartColor(new ColorRGBA(0.5f,0,1f,0.5f));
 		flash1.setEndColor(new ColorRGBA(1,1,1,0.5f));
 
-		ParticleEmitter flash2 = new ParticleEmitter("underlord purple", ParticleMesh.Type.Triangle, 7);
+		ParticleEmitter flash2 = new ParticleEmitter("underlord red", ParticleMesh.Type.Triangle, 7);
 		flash2.setParticlesPerSec(6);
+		flash2.setRandomAngle(true);
 		flash2.setMaterial(flash_mat);
 		flash2.setImagesX(2); // columns
 		flash2.setImagesY(2); // rows
