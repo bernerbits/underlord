@@ -1,6 +1,7 @@
 package com.bernerbits.throwaway.jmonkey;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import com.bernerbits.ul.camera.CameraController;
 import com.bernerbits.ul.mesh.DungeonGenerator;
@@ -25,7 +26,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.shadow.BasicShadowRenderer;
+import com.jme3.shadow.DirectionalLightShadowRenderer;
 
 public class Monkey1 extends SimpleApplication {
 
@@ -100,8 +101,8 @@ public class Monkey1 extends SimpleApplication {
 	    sun.setColor(ColorRGBA.White);
 	    world.addLight(sun);
 	    
-	    BasicShadowRenderer shadow = new BasicShadowRenderer(assetManager,4096);
-	    shadow.setDirection(new Vector3f(-1,-1,-1).normalizeLocal());
+	    DirectionalLightShadowRenderer shadow = new DirectionalLightShadowRenderer(assetManager,2048,5);
+	    shadow.setLight(sun);
 	    viewPort.addProcessor(shadow);
 	    
 	    // Camera
@@ -122,15 +123,26 @@ public class Monkey1 extends SimpleApplication {
 		bulletAppState.getPhysicsSpace().add(minionControl);		
 	}
 
-	float lastUpdate = timer.getTimeInSeconds();
+	float lastUpdate = 0;
+	float current = 0;
+	Random random = new Random();
 	
 	@Override
 	public void simpleUpdate(float tpf) {
-		if(timer.getTimeInSeconds() - lastUpdate > 1) {
-			lastUpdate += 1;
+		current += tpf;
+		if(current - lastUpdate > 1) {
+			while(current - lastUpdate > 1) {
+				lastUpdate += 1;
+			}
 			Vector3f walk = minionControl.getWalkDirection();
-			minionControl.setWalkDirection(new Vector3f(-walk.z,walk.y,walk.x));
+			if(random.nextBoolean()) {
+				minionControl.setWalkDirection(new Vector3f(-walk.z,walk.y,walk.x));
+			} else {
+				minionControl.setWalkDirection(new Vector3f(walk.z,walk.y,-walk.x));
+			}
 			minionControl.setViewDirection(minionControl.getWalkDirection().normalize());
+			
 		}
 	}
+
 }

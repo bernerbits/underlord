@@ -132,8 +132,8 @@ public final class Polygon2D {
 			Polygon2DNode prev = node.prev();
 			Polygon2DNode next = node.next();
 			
-			double normalX = -(next.getY() - prev.getY());
-			double normalZ = next.getX() - prev.getX();
+			double normalX = next.getY() - prev.getY();
+			double normalZ = -(next.getX() - prev.getX());
 			
 			node.setNormalAndNormalize(normalX,normalZ);
 			node.setTextureCoordinate(texX);
