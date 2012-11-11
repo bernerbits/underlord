@@ -5,7 +5,7 @@ import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -57,7 +57,7 @@ public class UnderlordGenerator {
 
 		underlord.attachChild(flash1);
 		underlord.attachChild(flash2);
-		
+		underlord.setShadowMode(ShadowMode.Off);
 		return underlord;
 	}
 

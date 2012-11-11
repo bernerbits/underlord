@@ -20,6 +20,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
@@ -102,8 +103,8 @@ public class DungeonGenerator {
 		
 		floor.updateBound();
 		Geometry floorGeom = new Geometry(name + " Floor",floor);
-		
-	    return floorGeom;
+		floorGeom.setShadowMode(ShadowMode.Receive);
+		return floorGeom;
 	}
 
 	private Geometry generateWall(Polygon2D wallPoly, int wallIndex) {
@@ -140,7 +141,7 @@ public class DungeonGenerator {
 		
 		wall.updateBound();
 		Geometry wallGeom = new Geometry(name + " Wall " + wallIndex,wall);
-		
+		wallGeom.setShadowMode(ShadowMode.CastAndReceive);
 		return wallGeom;
 	}
 	

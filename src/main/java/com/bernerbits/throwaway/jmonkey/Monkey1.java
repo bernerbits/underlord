@@ -22,8 +22,10 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.shadow.BasicShadowRenderer;
 
 public class Monkey1 extends SimpleApplication {
 
@@ -74,6 +76,8 @@ public class Monkey1 extends SimpleApplication {
 		minion.getControl(AnimControl.class).createChannel().setAnim("RunTop");
 		minion.getControl(AnimControl.class).createChannel().setAnim("HandsClosed");
 		
+		minion.setShadowMode(ShadowMode.CastAndReceive);
+		
 		minionShape = new CapsuleCollisionShape(.3f,.5f,1);
 		minionControl = new CharacterControl(minionShape, 0.05f);
 		minionControl.setGravity(30);
@@ -88,13 +92,17 @@ public class Monkey1 extends SimpleApplication {
 		
 		// Lights
 		AmbientLight ambient = new AmbientLight();
-		ambient.setColor(new ColorRGBA(1.8f,1.8f,1.8f,1));
+		ambient.setColor(new ColorRGBA(1.8f,1.35f,.9f,1));
 		world.addLight(ambient);
 	    
 	    DirectionalLight sun = new DirectionalLight();
 	    sun.setDirection(new Vector3f(1,-1,1).normalizeLocal());
 	    sun.setColor(ColorRGBA.White);
 	    world.addLight(sun);
+	    
+	    BasicShadowRenderer shadow = new BasicShadowRenderer(assetManager,4096);
+	    shadow.setDirection(new Vector3f(-1,-1,-1).normalizeLocal());
+	    viewPort.addProcessor(shadow);
 	    
 	    // Camera
 	    flyCam.setEnabled(false); // Disable fly-by controls
@@ -114,7 +122,7 @@ public class Monkey1 extends SimpleApplication {
 		bulletAppState.getPhysicsSpace().add(minionControl);		
 	}
 
-	float lastUpdate = 0;
+	float lastUpdate = timer.getTimeInSeconds();
 	
 	@Override
 	public void simpleUpdate(float tpf) {
